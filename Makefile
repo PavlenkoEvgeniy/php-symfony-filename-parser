@@ -1,4 +1,12 @@
-init: composer-install
+init:
+	docker compose -f docker/docker-compose.yml up -d --build
+	composer install
+
+restart:
+	docker compose -f docker/docker-compose.yml up -d
+
+stop:
+	docker compose -f docker/docker-compose.yml down
 
 composer-install:
 	composer install
