@@ -77,6 +77,71 @@ final class FilenameParseCommandTest extends TestCase
         $this->assertSame("3\n5\n", $content);
     }
 
+    public function testInvalidFolderReturnsFailure(): void
+    {
+        $dir     = $this->createTempDir();
+        $missing = $dir . DIRECTORY_SEPARATOR . 'does-not-exist';
+
+        $tester = new CommandTester(new FilenameParseCommand());
+        $tester->setInputs(['extract numbers', '#(\d+)']);
+        $exitCode = $tester->execute([
+            'folder' => $missing,
+            'output' => $dir . DIRECTORY_SEPARATOR . 'numbers.txt',
+        ], ['interactive' => true]);
+
+        $this->assertSame(1, $exitCode);
+        $this->assertStringContainsString('Folder not found', $tester->getDisplay());
+    }
+
+    public function testExtractNumbersWithNoMatchesCreatesEmptyFile(): void
+    {
+        $dir = $this->createTempDir();
+        $this->writeFile($dir, 'no-numbers-here.txt');
+
+        $outputPath = $dir . DIRECTORY_SEPARATOR . 'numbers.txt';
+
+        $tester = new CommandTester(new FilenameParseCommand());
+        $tester->setInputs(['extract numbers', '#(\d+)']);
+        $exitCode = $tester->execute([
+            'folder' => $dir,
+            'output' => $outputPath,
+        ], ['interactive' => true]);
+
+        $this->assertSame(0, $exitCode);
+        $this->assertFileExists($outputPath);
+        $this->assertSame('', \file_get_contents($outputPath));
+        $this->assertStringContainsString('No matches found', $tester->getDisplay());
+    }
+
+    public function testRenameSkipsWhenTargetExists(): void
+    {
+        $dir = $this->createTempDir();
+        $this->writeFile($dir, 'report #2 final.pdf');
+        $this->writeFile($dir, '2.report #2 final.pdf', 'existing');
+
+        $tester = new CommandTester(new FilenameParseCommand());
+        $tester->setInputs(['rename files', '^report #(\\d+)']);
+        $exitCode = $tester->execute([
+            'folder' => $dir,
+        ], ['interactive' => true]);
+
+        $this->assertSame(0, $exitCode);
+        $this->assertFileExists($dir . DIRECTORY_SEPARATOR . 'report #2 final.pdf');
+        $this->assertFileExists($dir . DIRECTORY_SEPARATOR . '2.report #2 final.pdf');
+        $this->assertStringContainsString('Skip rename', $tester->getDisplay());
+    }
+
+    public function testNormalizePatternAddsDelimitersOrUsesDefault(): void
+    {
+        $command = new FilenameParseCommand();
+        $method  = new \ReflectionMethod($command, 'normalizePattern');
+        $method->setAccessible(true);
+
+        $this->assertSame('/#(\d+)/', $method->invoke($command, '#(\d+)'));
+        $this->assertSame('/#(\d+)/', $method->invoke($command, ''));
+        $this->assertSame('/#(\d+)/', $method->invoke($command, '/#(\d+)/'));
+    }
+
     private function createTempDir(): string
     {
         $dir = \sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'filename-parser-' . \bin2hex(\random_bytes(6));
