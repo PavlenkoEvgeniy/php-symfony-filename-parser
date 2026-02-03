@@ -4,9 +4,35 @@ PHP CLI tool that scans a folder, extracts numbers that match a regex pattern fr
 
 ## ✅ Requirements
 
+Choose one of the following:
+
+- Docker + Docker Compose (recommended)
 - PHP 8.4 (CLI)
 
 ## ▶️ Usage
+
+### Docker (recommended)
+
+Start the container and install dependencies:
+
+```
+docker compose -f docker/docker-compose.yml up -d --build
+docker compose -f docker/docker-compose.yml run --rm app composer install
+```
+
+Run the command:
+
+```
+docker compose -f docker/docker-compose.yml run --rm app php bin/console [folder] [output]
+```
+
+Stop the container:
+
+```
+docker compose -f docker/docker-compose.yml down
+```
+
+### Local PHP
 
 Run from the project folder:
 
@@ -57,7 +83,13 @@ Example rename (default pattern):
 
 ## 🧪 Tests
 
-Run PHPUnit:
+Run PHPUnit in Docker:
+
+```
+docker compose -f docker/docker-compose.yml run --rm app vendor/bin/phpunit
+```
+
+Run PHPUnit locally:
 
 ```
 ./vendor/bin/phpunit
