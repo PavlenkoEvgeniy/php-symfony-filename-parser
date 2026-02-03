@@ -53,7 +53,8 @@
             "ttl",
             "enum",
             "ux",
-            "zenstruck"
+            "zenstruck",
+            "dirs"
         ],
         "paths": [
             "vendor"
