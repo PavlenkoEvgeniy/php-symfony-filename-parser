@@ -38,3 +38,6 @@ test:
 
 test-coverage:
 	docker compose -f docker/docker-compose.yml -p php-symfony-filename-parser run --rm app vendor/bin/phpunit --colors=always --coverage-text
+
+bash:
+	docker compose -f docker/docker-compose.yml -p php-symfony-filename-parser run --rm app bash
