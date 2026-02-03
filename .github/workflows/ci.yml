@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+
+      - name: Install dependencies
+        run: make init
+
+      - name: PHPStan
+        run: make phpstan
+
+      - name: Psalm
+        run: make psalm
+
+      - name: CS check
+        run: make cs-check
+
+      - name: Peck
+        run: make peck
+
+      - name: Security check
+        run: make security-check
+
+      - name: Tests
+        run: make test
