@@ -1,38 +1,40 @@
 init:
-	docker compose -f docker/docker-compose.yml up -d --build
-	composer install
+	docker compose -f docker/docker-compose.yml -p php-symfony-filename-parser up -d --build
+	docker compose -f docker/docker-compose.yml -p php-symfony-filename-parser run --rm app composer install
 
 restart:
-	docker compose -f docker/docker-compose.yml up -d
+	docker compose -f docker/docker-compose.yml -p php-symfony-filename-parser up -d
 
 stop:
-	docker compose -f docker/docker-compose.yml down
+	docker compose -f docker/docker-compose.yml -p php-symfony-filename-parser down
 
 composer-install:
-	composer install
+	docker compose -f docker/docker-compose.yml -p php-symfony-filename-parser run --rm app composer install
 
 composer-update:
-	composer update
+	docker compose -f docker/docker-compose.yml -p php-symfony-filename-parser run --rm app composer update
 
 phpstan:
-	vendor/bin/phpstan analyse --memory-limit=256M
+	docker compose -f docker/docker-compose.yml -p php-symfony-filename-parser run --rm app vendor/bin/phpstan analyse --memory-limit=256M
 
 psalm:
-	vendor/bin/psalm
-
+	docker compose -f docker/docker-compose.yml -p php-symfony-filename-parser run --rm app vendor/bin/psalm
 cs-check:
-	vendor/bin/php-cs-fixer fix --dry-run --diff --allow-risky=yes
+	docker compose -f docker/docker-compose.yml -p php-symfony-filename-parser run --rm app vendor/bin/php-cs-fixer fix --dry-run --diff --allow-risky=yes
+
+cs-fix:
+	docker compose -f docker/docker-compose.yml -p php-symfony-filename-parser run --rm app vendor/bin/php-cs-fixer fix --allow-risky=yes
 
 peck:
-	vendor/bin/peck
+	docker compose -f docker/docker-compose.yml -p php-symfony-filename-parser run --rm app vendor/bin/peck
 
 security-check:
-	composer audit
+	docker compose -f docker/docker-compose.yml -p php-symfony-filename-parser run --rm app composer audit
 
-lint: cs-check phpstan psalm peck security-check
+lint: cs-fix phpstan psalm peck security-check
 
 test:
-	vendor/bin/phpunit --colors=always
+	docker compose -f docker/docker-compose.yml -p php-symfony-filename-parser run --rm app vendor/bin/phpunit --colors=always
 
 test-coverage:
-	vendor/bin/phpunit --colors=always --coverage-text
+	docker compose -f docker/docker-compose.yml -p php-symfony-filename-parser run --rm app vendor/bin/phpunit --colors=always --coverage-text
