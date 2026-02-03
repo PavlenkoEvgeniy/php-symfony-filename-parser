@@ -20,6 +20,12 @@ docker compose -f docker/docker-compose.yml up -d --build
 docker compose -f docker/docker-compose.yml run --rm app composer install
 ```
 
+Or use the Makefile:
+
+```
+make init
+```
+
 Run the command:
 
 ```
@@ -30,6 +36,12 @@ Stop the container:
 
 ```
 docker compose -f docker/docker-compose.yml down
+```
+
+Or use the Makefile:
+
+```
+make stop
 ```
 
 ### Local PHP
@@ -89,8 +101,38 @@ Run PHPUnit in Docker:
 docker compose -f docker/docker-compose.yml run --rm app vendor/bin/phpunit
 ```
 
+Or use the Makefile:
+
+```
+make test
+```
+
+Run coverage in Docker:
+
+```
+make test-coverage
+```
+
 Run PHPUnit locally:
 
 ```
 ./vendor/bin/phpunit
+```
+
+## 🔧 Quality checks (Makefile)
+
+Run all linters and static analysis:
+
+```
+make lint
+```
+
+Run individual tools:
+
+```
+make phpstan
+make psalm
+make cs-check
+make peck
+make security-check
 ```
