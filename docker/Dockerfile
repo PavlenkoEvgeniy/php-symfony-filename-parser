@@ -2,7 +2,8 @@ FROM php:8.4-cli
 
 RUN apt-get update \
     && apt-get install aspell aspell-en -y \
-    && apt-get install -y $PHPIZE_DEPS \
+    && apt-get install -y git unzip libzip-dev $PHPIZE_DEPS \
+    && docker-php-ext-install zip \
     && pecl install xdebug \
     && docker-php-ext-enable xdebug \
     && apt-get purge -y --auto-remove $PHPIZE_DEPS \
